@@ -1,11 +1,6 @@
 import Link from "next/link";
 import { getAllEntries } from "../../lib/db";
-
-function scoreColor(score: number): string {
-  if (score >= 8) return "text-emerald-600";
-  if (score <= 3) return "text-red-500";
-  return "text-foreground";
-}
+import EntryCard from "../../components/EntryCard";
 
 function formatDate(date: Date | string): string {
   const d = typeof date === "string" ? new Date(date) : date;
@@ -36,39 +31,16 @@ export default async function HistoryPage() {
         <p className="text-foreground/60">No entries yet.</p>
       ) : (
         <div className="space-y-4">
-          {entries.map((entry) => (
-            <div
-              key={entry.id}
-              className="rounded-xl border border-foreground/10 p-5 space-y-3"
-            >
-              <p className="text-sm font-medium text-foreground/60">
-                {formatDate(entry.createdAt)}
-              </p>
-
-              <div className="flex gap-8">
-                <div>
-                  <p className="text-xs text-foreground/50">Mental</p>
-                  <p className={`text-2xl font-bold ${scoreColor(entry.mentalEnergy)}`}>
-                    {entry.mentalEnergy}
-                  </p>
-                  {entry.mentalNote && (
-                    <p className="mt-1 text-sm text-foreground/70">{entry.mentalNote}</p>
-                  )}
-                </div>
-
-                <div>
-                  <p className="text-xs text-foreground/50">Physical</p>
-                  <p className={`text-2xl font-bold ${scoreColor(entry.physicalEnergy)}`}>
-                    {entry.physicalEnergy}
-                  </p>
-                  {entry.physicalNote && (
-                    <p className="mt-1 text-sm text-foreground/70">
-                      {entry.physicalNote}
-                    </p>
-                  )}
-                </div>
-              </div>
-            </div>
+          {entries.map(({ id, createdAt, mentalEnergy, mentalNote, physicalEnergy, physicalNote }) => (
+            <EntryCard
+              key={id}
+              title={formatDate(createdAt)}
+              mentalEnergy={mentalEnergy}
+              mentalNote={mentalNote}
+              physicalEnergy={physicalEnergy}
+              physicalNote={physicalNote}
+              createdAt={createdAt}
+            />
           ))}
         </div>
       )}
