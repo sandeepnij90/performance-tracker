@@ -13,11 +13,29 @@ interface Entry {
   physicalNote: string | null;
 }
 
-export default function CheckInForm() {
-  const [mentalEnergy, setMentalEnergy] = useState<number | null>(null);
-  const [physicalEnergy, setPhysicalEnergy] = useState<number | null>(null);
-  const [mentalNote, setMentalNote] = useState("");
-  const [physicalNote, setPhysicalNote] = useState("");
+interface CheckInFormProps {
+  initialEntry?: Entry;
+  onCancel?: () => void;
+  onSaved?: (entry: Entry) => void;
+}
+
+export default function CheckInForm({
+  initialEntry,
+  onCancel,
+  onSaved,
+}: CheckInFormProps) {
+  const isEditing = Boolean(initialEntry);
+
+  const [mentalEnergy, setMentalEnergy] = useState<number | null>(
+    initialEntry?.mentalEnergy ?? null,
+  );
+  const [physicalEnergy, setPhysicalEnergy] = useState<number | null>(
+    initialEntry?.physicalEnergy ?? null,
+  );
+  const [mentalNote, setMentalNote] = useState(initialEntry?.mentalNote ?? "");
+  const [physicalNote, setPhysicalNote] = useState(
+    initialEntry?.physicalNote ?? "",
+  );
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submittedEntry, setSubmittedEntry] = useState<Entry | null>(null);
@@ -31,9 +49,12 @@ export default function CheckInForm() {
     setError(null);
     setSubmitting(true);
 
+    const url = isEditing ? "/api/entries/today" : "/api/entries";
+    const method = isEditing ? "PUT" : "POST";
+
     try {
-      const res = await fetch("/api/entries", {
-        method: "POST",
+      const res = await fetch(url, {
+        method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           mentalEnergy,
@@ -50,7 +71,11 @@ export default function CheckInForm() {
         return;
       }
 
-      setSubmittedEntry(data);
+      if (onSaved) {
+        onSaved(data);
+      } else {
+        setSubmittedEntry(data);
+      }
     } catch {
       setError("Failed to submit. Please try again.");
     } finally {
@@ -89,13 +114,28 @@ export default function CheckInForm() {
 
       {error && <p className="text-sm text-red-500">{error}</p>}
 
-      <button
-        type="submit"
-        disabled={!canSubmit}
-        className="w-full rounded-lg bg-foreground py-3 text-background font-medium transition-opacity disabled:opacity-40"
-      >
-        {submitting ? "Submitting..." : "Log today's energy"}
-      </button>
+      <div className="flex gap-3">
+        {isEditing && onCancel && (
+          <button
+            type="button"
+            onClick={onCancel}
+            className="w-full rounded-lg border border-foreground/10 py-3 font-medium transition-opacity hover:bg-foreground/5"
+          >
+            Cancel
+          </button>
+        )}
+        <button
+          type="submit"
+          disabled={!canSubmit}
+          className="w-full rounded-lg bg-foreground py-3 text-background font-medium transition-opacity disabled:opacity-40"
+        >
+          {submitting
+            ? "Saving..."
+            : isEditing
+              ? "Update energy"
+              : "Log today\u2019s energy"}
+        </button>
+      </div>
     </form>
   );
 }

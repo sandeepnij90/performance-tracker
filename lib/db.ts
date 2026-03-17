@@ -1,17 +1,29 @@
 import prisma from "./prisma";
 
-export async function createEntry(data: {
+interface Entry {
   mentalEnergy: number;
-  mentalNote?: string | null;
+  mentalNote: string | null;
   physicalEnergy: number;
-  physicalNote?: string | null;
-}) {
+  physicalNote: string | null;
+}
+
+export async function createEntry(data: Entry) {
   return prisma.energyEntry.create({ data });
 }
 
 export async function getAllEntries() {
   return prisma.energyEntry.findMany({
     orderBy: { createdAt: "desc" },
+  });
+}
+
+export async function updateTodayEntry(data: Entry) {
+  const entry = await getTodayEntry();
+  if (!entry) return null;
+
+  return prisma.energyEntry.update({
+    where: { id: entry.id },
+    data,
   });
 }
 

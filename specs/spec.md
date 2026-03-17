@@ -196,6 +196,43 @@ Displays a list of all past energy entries in reverse chronological order.
 
 ---
 
+### Phase 6 — Edit Current Day's Score
+
+**Goal:** Allow the user to update today's energy entry from the home page without creating a duplicate.
+
+#### API
+
+| Method | Route                | Description                                    |
+| ------ | -------------------- | ---------------------------------------------- |
+| `PUT`  | `/api/entries/today` | Update today's entry (same validation as POST) |
+
+#### Service Layer
+
+- Add `updateTodayEntry()` to `lib/db.ts` — finds today's entry by date range and updates it
+
+#### UI Behaviour
+
+- When today's entry exists on the home page, an "Edit" button is shown alongside the `EntryCard`
+- Clicking "Edit" transitions to the `CheckInForm` pre-filled with the current scores and notes
+- The form submits via `PUT /api/entries/today` instead of `POST /api/entries`
+- On success, the UI transitions back to the updated `EntryCard` without a full page reload
+- The `EntryCard` component is **not** split — it remains a shared display component used by both the home page and the history page. The edit logic lives in the home page wrapper.
+
+#### Changes to Existing Components
+
+- `CheckInForm` — accept optional `initialEntry` prop; when provided, pre-fill the form and use PUT instead of POST
+- `app/page.tsx` — manage edit/view state; pass today's entry to `CheckInForm` when editing
+
+#### Acceptance Criteria
+
+- [ ] An "Edit" button is visible on the home page when today's entry exists
+- [ ] Clicking "Edit" shows the form pre-filled with current scores and notes
+- [ ] Submitting the edit form updates the existing entry (does not create a duplicate)
+- [ ] The updated `EntryCard` reflects the new values without a full reload
+- [ ] The history page is unaffected (read-only, no edit button)
+
+---
+
 ## Future Phase — Multi-User Support
 
 > This phase is out of scope for the initial release. The following notes capture the intent so the Phase 1–5 codebase can be built in a way that does not make this harder.
@@ -228,7 +265,7 @@ Displays a list of all past energy entries in reverse chronological order.
 │       └── entries/
 │           ├── route.ts        # GET all, POST new
 │           └── today/
-│               └── route.ts   # GET today's entry
+│               └── route.ts   # GET / PUT today's entry
 ├── components/
 │   ├── EnergySelector.tsx
 │   ├── CheckInForm.tsx
@@ -249,5 +286,5 @@ Displays a list of all past energy entries in reverse chronological order.
 - User authentication and accounts
 - Data export or reporting
 - Push notifications or reminders
-- Charts or trend visualisations (may be added as a Phase 6)
+- Charts or trend visualisations (may be added as a future phase)
 - Native mobile app
