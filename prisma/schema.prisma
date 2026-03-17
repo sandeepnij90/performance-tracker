@@ -13,10 +13,13 @@ datasource db {
 }
 
 model EnergyEntry {
-  id              Int      @id @default(autoincrement())
-  createdAt       DateTime @default(now())
-  mentalEnergy    Int      // 1–10, excluding 7
-  mentalNote      String?
-  physicalEnergy  Int      // 1–10, excluding 7
-  physicalNote    String?
+  id             Int      @id @default(autoincrement())
+  createdAt      DateTime @default(now())
+  mentalEnergy   Int // 1–10, excluding 7
+  mentalNote     String?
+  physicalEnergy Int // 1–10, excluding 7
+  physicalNote   String?
+  userId         String?
+
+  @@index([userId, createdAt])
 }
