@@ -12,6 +12,34 @@ datasource db {
   provider = "postgresql"
 }
 
+model User {
+  id            String        @id @default(cuid())
+  name          String?
+  email         String?       @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  entries       EnergyEntry[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
 model EnergyEntry {
   id             Int      @id @default(autoincrement())
   createdAt      DateTime @default(now())
@@ -19,7 +47,8 @@ model EnergyEntry {
   mentalNote     String?
   physicalEnergy Int // 1–10, excluding 7
   physicalNote   String?
-  userId         String?
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, createdAt])
 }
