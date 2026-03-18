@@ -1,22 +1,22 @@
 import Link from "next/link";
 import { getAllEntries } from "../../lib/db";
 import { auth } from "@/auth";
-import EntryCard from "../../components/EntryCard";
-
-function formatDate(date: Date | string): string {
-  const d = typeof date === "string" ? new Date(date) : date;
-  return d.toLocaleDateString("en-GB", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-}
+import HistoryView from "../../components/HistoryView";
 
 export default async function HistoryPage() {
   const session = await auth();
   const userId = session!.user!.id!;
-  const entries = await getAllEntries(userId);
+  const rawEntries = await getAllEntries(userId);
+
+  const entries = rawEntries.map((entry) => ({
+    id: entry.id,
+    date: entry.date.toISOString(),
+    createdAt: entry.createdAt.toISOString(),
+    mentalEnergy: entry.mentalEnergy,
+    mentalNote: entry.mentalNote,
+    physicalEnergy: entry.physicalEnergy,
+    physicalNote: entry.physicalNote,
+  }));
 
   return (
     <main className="mx-auto max-w-md px-4 py-12">
@@ -30,23 +30,7 @@ export default async function HistoryPage() {
         </Link>
       </div>
 
-      {entries.length === 0 ? (
-        <p className="text-foreground/60">No entries yet.</p>
-      ) : (
-        <div className="space-y-4">
-          {entries.map(({ id, createdAt, mentalEnergy, mentalNote, physicalEnergy, physicalNote }) => (
-            <EntryCard
-              key={id}
-              title={formatDate(createdAt)}
-              mentalEnergy={mentalEnergy}
-              mentalNote={mentalNote}
-              physicalEnergy={physicalEnergy}
-              physicalNote={physicalNote}
-              createdAt={createdAt}
-            />
-          ))}
-        </div>
-      )}
+      <HistoryView entries={entries} />
     </main>
   );
 }
