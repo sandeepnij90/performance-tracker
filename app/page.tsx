@@ -15,6 +15,7 @@ export default async function Home() {
       {todayEntry ? (
         <TodayView
           id={todayEntry.id}
+          date={todayEntry.date.toISOString()}
           createdAt={todayEntry.createdAt.toISOString()}
           mentalEnergy={todayEntry.mentalEnergy}
           mentalNote={todayEntry.mentalNote}

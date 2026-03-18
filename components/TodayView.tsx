@@ -3,21 +3,13 @@
 import { useState } from "react";
 import EntryCard from "./EntryCard";
 import CheckInForm from "./CheckInForm";
+import { EnergyEntry } from "@/lib/types";
 
-interface Entry {
-  id: number;
-  createdAt: string;
-  mentalEnergy: number;
-  mentalNote: string | null;
-  physicalEnergy: number;
-  physicalNote: string | null;
-}
-
-export default function TodayView(props: Entry) {
+export default function TodayView(props: EnergyEntry) {
   const [currentEntry, setCurrentEntry] = useState(props);
   const [editing, setEditing] = useState(false);
 
-  const handleSave = (updated: Entry) => {
+  const handleSave = (updated: EnergyEntry) => {
     setCurrentEntry(updated);
     setEditing(false);
   };

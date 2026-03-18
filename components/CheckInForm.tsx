@@ -3,24 +3,19 @@
 import { useState } from "react";
 import EnergySelector from "./EnergySelector";
 import EntryCard from "./EntryCard";
-
-interface Entry {
-  id: number;
-  createdAt: string;
-  mentalEnergy: number;
-  mentalNote: string | null;
-  physicalEnergy: number;
-  physicalNote: string | null;
-}
+import { EnergyEntry } from "@/lib/types";
+import { formatShortDate } from "@/lib/dates";
 
 interface CheckInFormProps {
-  initialEntry?: Entry;
+  initialEntry?: EnergyEntry;
+  targetDate?: Date;
   onCancel?: () => void;
-  onSaved?: (entry: Entry) => void;
+  onSaved?: (entry: EnergyEntry) => void;
 }
 
 export default function CheckInForm({
   initialEntry,
+  targetDate,
   onCancel,
   onSaved,
 }: CheckInFormProps) {
@@ -38,10 +33,20 @@ export default function CheckInForm({
   );
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [submittedEntry, setSubmittedEntry] = useState<Entry | null>(null);
+  const [submittedEntry, setSubmittedEntry] = useState<EnergyEntry | null>(
+    null,
+  );
 
   if (submittedEntry) {
-    return <EntryCard {...submittedEntry} />;
+    return (
+      <EntryCard
+        mentalEnergy={submittedEntry.mentalEnergy}
+        mentalNote={submittedEntry.mentalNote}
+        physicalEnergy={submittedEntry.physicalEnergy}
+        physicalNote={submittedEntry.physicalNote}
+        createdAt={submittedEntry.createdAt}
+      />
+    );
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -49,19 +54,31 @@ export default function CheckInForm({
     setError(null);
     setSubmitting(true);
 
-    const url = isEditing ? "/api/entries/today" : "/api/entries";
-    const method = isEditing ? "PUT" : "POST";
+    const url = initialEntry
+      ? `/api/entries/${initialEntry.id}`
+      : "/api/entries";
+    const method = initialEntry ? "PUT" : "POST";
+
+    const body: Record<string, unknown> = {
+      mentalEnergy,
+      mentalNote: mentalNote || null,
+      physicalEnergy,
+      physicalNote: physicalNote || null,
+    };
+
+    if (targetDate && !initialEntry) {
+      body.date = [
+        targetDate.getUTCFullYear(),
+        String(targetDate.getUTCMonth() + 1).padStart(2, "0"),
+        String(targetDate.getUTCDate()).padStart(2, "0"),
+      ].join("-");
+    }
 
     try {
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          mentalEnergy,
-          mentalNote: mentalNote || null,
-          physicalEnergy,
-          physicalNote: physicalNote || null,
-        }),
+        body: JSON.stringify(body),
       });
 
       const data = await res.json();
@@ -85,6 +102,15 @@ export default function CheckInForm({
 
   const canSubmit =
     mentalEnergy !== null && physicalEnergy !== null && !submitting;
+
+  function getButtonLabel() {
+    if (submitting) return "Saving...";
+    if (isEditing) return "Update energy";
+    if (targetDate) return `Log energy for ${formatShortDate(targetDate)}`;
+    return "Log today\u2019s energy";
+  }
+
+  const buttonLabel = getButtonLabel();
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
@@ -129,11 +155,7 @@ export default function CheckInForm({
           disabled={!canSubmit}
           className="w-full rounded-lg bg-foreground py-3 text-background font-medium transition-opacity disabled:opacity-40"
         >
-          {submitting
-            ? "Saving..."
-            : isEditing
-              ? "Update energy"
-              : "Log today\u2019s energy"}
+          {buttonLabel}
         </button>
       </div>
     </form>

@@ -42,6 +42,7 @@ model Account {
 
 model EnergyEntry {
   id             Int      @id @default(autoincrement())
+  date           DateTime
   createdAt      DateTime @default(now())
   mentalEnergy   Int // 1–10, excluding 7
   mentalNote     String?
@@ -50,5 +51,6 @@ model EnergyEntry {
   userId         String
   user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([userId, createdAt])
+  @@unique([userId, date])
+  @@index([userId, date])
 }
