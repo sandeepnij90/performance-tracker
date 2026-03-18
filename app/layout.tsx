@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { auth } from "@/auth";
+import Header from "@/components/Header";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -17,16 +19,21 @@ export const metadata: Metadata = {
   description: "Track your daily mental and physical energy levels",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await auth();
+
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        {session?.user && (
+          <Header name={session.user.name} email={session.user.email} />
+        )}
         {children}
       </body>
     </html>
