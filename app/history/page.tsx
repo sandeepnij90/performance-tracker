@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getAllEntries } from "../../lib/db";
+import { auth } from "@/auth";
 import EntryCard from "../../components/EntryCard";
 
 function formatDate(date: Date | string): string {
@@ -13,7 +14,9 @@ function formatDate(date: Date | string): string {
 }
 
 export default async function HistoryPage() {
-  const entries = await getAllEntries();
+  const session = await auth();
+  const userId = session!.user!.id!;
+  const entries = await getAllEntries(userId);
 
   return (
     <main className="mx-auto max-w-md px-4 py-12">

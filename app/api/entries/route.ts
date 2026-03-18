@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createEntry, getAllEntries } from "../../../lib/db";
+import { auth } from "@/auth";
 
 const VALID_SCORES = [1, 2, 3, 4, 5, 6, 8, 9, 10];
 
@@ -17,8 +18,11 @@ function validateScore(value: unknown, field: string): string | null {
 }
 
 export async function GET() {
+  const session = await auth();
+  const userId = session!.user!.id!;
+
   try {
-    const entries = await getAllEntries();
+    const entries = await getAllEntries(userId);
     return NextResponse.json(entries);
   } catch (error) {
     console.error("Error fetching entries:", error);
@@ -30,6 +34,9 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
+  const session = await auth();
+  const userId = session!.user!.id!;
+
   try {
     const body = await request.json();
 
@@ -43,7 +50,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: physicalError }, { status: 400 });
     }
 
-    const entry = await createEntry({
+    const entry = await createEntry(userId, {
       mentalEnergy: body.mentalEnergy,
       mentalNote: body.mentalNote || null,
       physicalEnergy: body.physicalEnergy,

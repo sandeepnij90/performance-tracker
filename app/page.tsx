@@ -1,10 +1,13 @@
 import Link from "next/link";
 import { getTodayEntry } from "../lib/db";
+import { auth } from "@/auth";
 import CheckInForm from "../components/CheckInForm";
 import TodayView from "../components/TodayView";
 
 export default async function Home() {
-  const todayEntry = await getTodayEntry();
+  const session = await auth();
+  const userId = session!.user!.id!;
+  const todayEntry = await getTodayEntry(userId);
 
   return (
     <main className="mx-auto max-w-md px-4 py-12">

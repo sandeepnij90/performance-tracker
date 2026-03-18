@@ -7,7 +7,8 @@ async function testDatabase() {
 
   try {
     console.log("📝 Creating a test energy entry...");
-    const entry = await createEntry({
+    const TEST_USER_ID = "test-user";
+    const entry = await createEntry(TEST_USER_ID, {
       mentalEnergy: 8,
       mentalNote: "Feeling focused",
       physicalEnergy: 6,
@@ -16,7 +17,7 @@ async function testDatabase() {
     console.log("✅ Created entry:", entry);
 
     console.log("\n📋 Fetching all entries...");
-    const allEntries = await getAllEntries();
+    const allEntries = await getAllEntries(TEST_USER_ID);
     console.log(`✅ Found ${allEntries.length} entry/entries`);
 
     console.log("\n🎉 Database is working correctly.\n");

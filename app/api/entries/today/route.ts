@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getTodayEntry, updateTodayEntry } from "../../../../lib/db";
+import { auth } from "@/auth";
 
 const VALID_SCORES = [1, 2, 3, 4, 5, 6, 8, 9, 10];
 
@@ -17,8 +18,11 @@ function validateScore(value: unknown, field: string): string | null {
 }
 
 export async function GET() {
+  const session = await auth();
+  const userId = session!.user!.id!;
+
   try {
-    const entry = await getTodayEntry();
+    const entry = await getTodayEntry(userId);
     return NextResponse.json(entry);
   } catch (error) {
     console.error("Error fetching today's entry:", error);
@@ -30,6 +34,9 @@ export async function GET() {
 }
 
 export async function PUT(request: NextRequest) {
+  const session = await auth();
+  const userId = session!.user!.id!;
+
   try {
     const body = await request.json();
 
@@ -43,7 +50,7 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: physicalError }, { status: 400 });
     }
 
-    const entry = await updateTodayEntry({
+    const entry = await updateTodayEntry(userId, {
       mentalEnergy: body.mentalEnergy,
       mentalNote: body.mentalNote || null,
       physicalEnergy: body.physicalEnergy,
