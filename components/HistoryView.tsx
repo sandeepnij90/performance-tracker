@@ -17,7 +17,7 @@ export default function HistoryView({
   entries: initialEntries,
 }: HistoryViewProps) {
   const [view, setView] = useState<ViewState>("list");
-  const [entries] = useState(initialEntries);
+  const [entries, setEntries] = useState(initialEntries);
   const [modalState, setModalState] = useState<{
     date: Date;
     entry: EnergyEntry | null;
@@ -28,6 +28,19 @@ export default function HistoryView({
   }
 
   function closeModal() {
+    setModalState(null);
+  }
+
+  function handleSaved(newEntry: EnergyEntry) {
+    setEntries((prev) => {
+      const exists = prev.some((e) => e.id === newEntry.id);
+
+      if (exists) {
+        return prev.map((e) => (e.id === newEntry.id ? newEntry : e));
+      }
+
+      return [...prev, newEntry].sort((a, b) => b.date.localeCompare(a.date));
+    });
     setModalState(null);
   }
 
@@ -86,7 +99,7 @@ export default function HistoryView({
           date={modalState.date}
           entry={modalState.entry}
           onClose={closeModal}
-          onSaved={() => {}}
+          onSaved={handleSaved}
         />
       )}
     </>
