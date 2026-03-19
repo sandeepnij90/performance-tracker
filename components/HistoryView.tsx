@@ -3,6 +3,7 @@
 import { useState } from "react";
 import EntryCard from "./EntryCard";
 import CalendarView from "./CalendarView";
+import DayModal from "./DayModal";
 import { EnergyEntry } from "@/lib/types";
 import { formatEntryDate } from "@/lib/dates";
 
@@ -10,9 +11,25 @@ interface HistoryViewProps {
   entries: EnergyEntry[];
 }
 
-export default function HistoryView({ entries: initialEntries }: HistoryViewProps) {
-  const [view, setView] = useState<"list" | "calendar">("list");
+type ViewState = "list" | "calendar";
+
+export default function HistoryView({
+  entries: initialEntries,
+}: HistoryViewProps) {
+  const [view, setView] = useState<ViewState>("list");
   const [entries] = useState(initialEntries);
+  const [modalState, setModalState] = useState<{
+    date: Date;
+    entry: EnergyEntry | null;
+  } | null>(null);
+
+  function handleDayClick(date: Date, entry: EnergyEntry | null) {
+    setModalState({ date, entry });
+  }
+
+  function closeModal() {
+    setModalState(null);
+  }
 
   return (
     <>
@@ -41,8 +58,8 @@ export default function HistoryView({ entries: initialEntries }: HistoryViewProp
         </button>
       </div>
 
-      {view === "list" && (
-        entries.length === 0 ? (
+      {view === "list" &&
+        (entries.length === 0 ? (
           <p className="text-foreground/60">No entries yet.</p>
         ) : (
           <div className="space-y-4">
@@ -58,13 +75,18 @@ export default function HistoryView({ entries: initialEntries }: HistoryViewProp
               />
             ))}
           </div>
-        )
-      )}
+        ))}
 
       {view === "calendar" && (
-        <CalendarView
-          entries={entries}
-          onDayClick={() => {}}
+        <CalendarView entries={entries} onDayClick={handleDayClick} />
+      )}
+
+      {modalState && (
+        <DayModal
+          date={modalState.date}
+          entry={modalState.entry}
+          onClose={closeModal}
+          onSaved={() => {}}
         />
       )}
     </>
