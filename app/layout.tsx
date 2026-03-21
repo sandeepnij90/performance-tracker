@@ -31,9 +31,11 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {session?.user && (
-          <Header name={session.user.name} email={session.user.email} />
-        )}
+        <Header
+          name={session?.user?.name}
+          email={session?.user?.email}
+          isSignedIn={Boolean(session?.user)}
+        />
         {children}
       </body>
     </html>
