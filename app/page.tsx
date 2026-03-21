@@ -6,6 +6,11 @@ const tools = [
     description: "Track your daily mental and physical energy levels",
     href: "/energy-audit",
   },
+  {
+    name: "Daily Journal",
+    description: "Set daily goals and reflect on your performance",
+    href: "/journal",
+  },
 ];
 
 export default function Home() {
