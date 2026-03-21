@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { getAllEntries } from "../../lib/db";
+import { getAllEntries } from "../../../lib/db";
 import { auth } from "@/auth";
-import HistoryView from "../../components/HistoryView";
+import HistoryView from "../../../components/HistoryView";
 
 export default async function HistoryPage() {
   const session = await auth();
@@ -23,7 +23,7 @@ export default async function HistoryPage() {
       <div className="mb-8 flex items-center justify-between">
         <h1 className="text-2xl font-bold">History</h1>
         <Link
-          href="/"
+          href="/energy-audit"
           className="text-sm text-foreground/60 hover:text-foreground transition-colors"
         >
           &larr; Back

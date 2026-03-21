@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createEntry, getAllEntries, getEntryByDate } from "../../../lib/db";
-import { toMidnightUTC } from "../../../lib/dates";
+import { createEntry, getAllEntries, getEntryByDate } from "../../../../lib/db";
+import { toMidnightUTC } from "../../../../lib/dates";
 import { auth } from "@/auth";
 
 const VALID_SCORES = [1, 2, 3, 4, 5, 6, 8, 9, 10];

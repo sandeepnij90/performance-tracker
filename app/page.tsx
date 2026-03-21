@@ -1,37 +1,31 @@
 import Link from "next/link";
-import { getTodayEntry } from "../lib/db";
-import { auth } from "@/auth";
-import CheckInForm from "../components/CheckInForm";
-import TodayView from "../components/TodayView";
 
-export default async function Home() {
-  const session = await auth();
-  const userId = session!.user!.id!;
-  const todayEntry = await getTodayEntry(userId);
+const tools = [
+  {
+    name: "Energy Audit",
+    description: "Track your daily mental and physical energy levels",
+    href: "/energy-audit",
+  },
+];
 
+export default function Home() {
   return (
     <main className="mx-auto max-w-md px-4 py-12">
-      <h1 className="mb-8 text-2xl font-bold">Energy Tracker</h1>
-      {todayEntry ? (
-        <TodayView
-          id={todayEntry.id}
-          date={todayEntry.date.toISOString()}
-          createdAt={todayEntry.createdAt.toISOString()}
-          mentalEnergy={todayEntry.mentalEnergy}
-          mentalNote={todayEntry.mentalNote}
-          physicalEnergy={todayEntry.physicalEnergy}
-          physicalNote={todayEntry.physicalNote}
-        />
-      ) : (
-        <CheckInForm />
-      )}
-
-      <Link
-        href="/history"
-        className="mt-8 block text-center text-sm text-foreground/60 hover:text-foreground transition-colors"
-      >
-        View history &rarr;
-      </Link>
+      <h1 className="mb-8 text-2xl font-bold">Performance Tracker</h1>
+      <div className="space-y-4">
+        {tools.map((tool) => (
+          <Link
+            key={tool.href}
+            href={tool.href}
+            className="block rounded-xl border border-foreground/10 p-5 transition-colors hover:bg-foreground/5"
+          >
+            <h2 className="text-lg font-medium">{tool.name}</h2>
+            <p className="mt-1 text-sm text-foreground/60">
+              {tool.description}
+            </p>
+          </Link>
+        ))}
+      </div>
     </main>
   );
 }

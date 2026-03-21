@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Energy Tracker",
-  description: "Track your daily mental and physical energy levels",
+  title: "Performance Tracker",
+  description: "Tools for tracking and improving your performance",
 };
 
 export default async function RootLayout({

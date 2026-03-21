@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { updateEntryById } from "../../../../lib/db";
+import { updateEntryById } from "../../../../../lib/db";
 import { auth } from "@/auth";
 
 const VALID_SCORES = [1, 2, 3, 4, 5, 6, 8, 9, 10];

@@ -55,8 +55,8 @@ export default function CheckInForm({
     setSubmitting(true);
 
     const url = initialEntry
-      ? `/api/entries/${initialEntry.id}`
-      : "/api/entries";
+      ? `/api/energy-audit/entries/${initialEntry.id}`
+      : "/api/energy-audit/entries";
     const method = initialEntry ? "PUT" : "POST";
 
     const body: Record<string, unknown> = {
