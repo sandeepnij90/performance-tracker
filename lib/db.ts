@@ -62,3 +62,60 @@ export async function updateTodayEntry(userId: string, data: EntryData) {
   if (!entry) return null;
   return updateEntryById(userId, entry.id, data);
 }
+
+// --- Journal ---
+
+export async function createJournalEntry(
+  userId: string,
+  data: { successVision: string },
+  date?: Date,
+) {
+  const entryDate = date ?? toMidnightUTC(new Date());
+  return prisma.journalEntry.create({
+    data: { ...data, userId, date: entryDate },
+  });
+}
+
+export async function getTodayJournalEntry(userId: string) {
+  const today = toMidnightUTC(new Date());
+  return prisma.journalEntry.findUnique({
+    where: { userId_date: { userId, date: today } },
+  });
+}
+
+export async function getAllJournalEntries(userId: string, month?: string) {
+  const where: { userId: string; date?: { gte: Date; lt: Date } } = { userId };
+  if (month) {
+    const [year, mon] = month.split("-").map(Number);
+    const start = new Date(Date.UTC(year, mon - 1, 1));
+    const end = new Date(Date.UTC(year, mon, 1));
+    where.date = { gte: start, lt: end };
+  }
+  return prisma.journalEntry.findMany({
+    where,
+    orderBy: { date: "desc" },
+  });
+}
+
+export async function getJournalEntryByDate(userId: string, date: Date) {
+  return prisma.journalEntry.findUnique({
+    where: { userId_date: { userId, date } },
+  });
+}
+
+export async function updateJournalEntryById(
+  userId: string,
+  id: number,
+  data: {
+    successVision?: string;
+    achieved?: boolean | null;
+    achievedNote?: string | null;
+    performanceScore?: number | null;
+    improvementNote?: string | null;
+  },
+) {
+  return prisma.journalEntry.update({
+    where: { id, userId },
+    data,
+  });
+}
