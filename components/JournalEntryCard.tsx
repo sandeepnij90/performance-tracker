@@ -26,8 +26,8 @@ export default function JournalEntryCard({
         {/* Morning section */}
         <div>
           <p className="mb-1 text-xs text-white/45">Morning intention</p>
-          <p className="text-sm text-white/80">
-            &ldquo;{entry.successVision}&rdquo;
+          <p className="whitespace-pre-line text-sm text-white/80">
+            {entry.successVision}
           </p>
         </div>
 
@@ -41,8 +41,8 @@ export default function JournalEntryCard({
                   {entry.achieved ? "\u2713 Yes" : "\u2717 No"}
                 </p>
                 {entry.achievedNote && (
-                  <p className="mt-1 text-[13px] text-white/45">
-                    &ldquo;{entry.achievedNote}&rdquo;
+                  <p className="mt-1 whitespace-pre-line text-[13px] text-white/45">
+                    {entry.achievedNote}
                   </p>
                 )}
               </div>
@@ -69,8 +69,8 @@ export default function JournalEntryCard({
             {entry.improvementNote && (
               <div>
                 <p className="mb-1 text-xs text-white/45">To improve</p>
-                <p className="text-[13px] text-white/45">
-                  &ldquo;{entry.improvementNote}&rdquo;
+                <p className="whitespace-pre-line text-[13px] text-white/45">
+                  {entry.improvementNote}
                 </p>
               </div>
             )}

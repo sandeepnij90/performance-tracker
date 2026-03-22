@@ -36,7 +36,7 @@ function EnergyItem({
         />
       </div>
       <div className="grow">
-        {note && <p className="text-[13px] text-white/45">{note}</p>}
+        {note && <p className="whitespace-pre-line text-[13px] text-white/45">{note}</p>}
       </div>
     </div>
   );
