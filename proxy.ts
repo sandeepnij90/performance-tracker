@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
-import { getToken } from "next-auth/jwt"
+import { auth } from "@/auth"
 
 export async function proxy(req: NextRequest) {
-  const token = await getToken({ req, secret: process.env.AUTH_SECRET })
-  if (!token) {
+  const session = await auth()
+  if (!session) {
     return NextResponse.redirect(new URL("/sign-in", req.url))
   }
 }
