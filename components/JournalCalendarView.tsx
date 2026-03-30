@@ -3,28 +3,37 @@
 import { useMemo } from "react";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/style.css";
-import { EnergyEntry } from "@/lib/types";
-import { toMidnightUTC } from "@/lib/dates";
-
-interface CalendarViewProps {
-  entries: EnergyEntry[];
-  onDayClick: (date: Date, entry: EnergyEntry | null) => void;
+import { JournalEntry } from "@/lib/types";
+interface JournalCalendarViewProps {
+  entries: JournalEntry[];
+  onDayClick: (date: Date, entry: JournalEntry | null) => void;
 }
 
-export default function CalendarView({
+export default function JournalCalendarView({
   entries,
   onDayClick,
-}: CalendarViewProps) {
+}: JournalCalendarViewProps) {
   const entryMap = useMemo(() => {
-    const map = new Map<string, EnergyEntry>();
+    const map = new Map<string, JournalEntry>();
     for (const entry of entries) {
       map.set(entry.date, entry);
     }
     return map;
   }, [entries]);
 
-  const datesWithEntries = useMemo(
-    () => entries.map((e) => new Date(e.date)),
+  const completeDates = useMemo(
+    () =>
+      entries
+        .filter((e) => e.achieved !== null)
+        .map((e) => new Date(e.date)),
+    [entries],
+  );
+
+  const partialDates = useMemo(
+    () =>
+      entries
+        .filter((e) => e.achieved === null)
+        .map((e) => new Date(e.date)),
     [entries],
   );
 
@@ -39,16 +48,21 @@ export default function CalendarView({
   return (
     <DayPicker
       onDayClick={handleDayClick}
-      modifiers={{ hasEntry: datesWithEntries }}
+      modifiers={{
+        journalComplete: completeDates,
+        journalPartial: partialDates,
+      }}
       modifiersClassNames={{
-        hasEntry: "rdp-day-has-entry",
+        journalComplete: "rdp-day-journal-complete",
+        journalPartial: "rdp-day-journal-partial",
         today: "ring-1 ring-white/30 rounded-lg",
       }}
       classNames={{
         month_caption: "relative flex justify-center items-center mb-4",
         caption_label: "text-sm font-medium",
         nav: "absolute inset-x-0 top-0 flex justify-between",
-        button_previous: "p-1 text-white/40 hover:text-white transition-colors",
+        button_previous:
+          "p-1 text-white/40 hover:text-white transition-colors",
         button_next: "p-1 text-white/40 hover:text-white transition-colors",
         weekday: "text-white/30 text-xs font-medium w-9 text-center pb-2",
         day: "w-9 h-9 text-center",

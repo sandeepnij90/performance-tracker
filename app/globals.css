@@ -41,3 +41,26 @@ body {
   background-color: #7f77dd;
   margin: 2px auto 0;
 }
+
+/* Journal: complete entry (morning + evening) */
+.rdp-day-journal-complete button::after {
+  content: "";
+  display: block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: #3B82F6;
+  margin: 2px auto 0;
+}
+
+/* Journal: partial entry (morning only) */
+.rdp-day-journal-partial button::after {
+  content: "";
+  display: block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: #3B82F6;
+  opacity: 0.4;
+  margin: 2px auto 0;
+}

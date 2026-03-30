@@ -68,9 +68,9 @@ export default function CheckInForm({
 
     if (targetDate && !initialEntry) {
       body.date = [
-        targetDate.getUTCFullYear(),
-        String(targetDate.getUTCMonth() + 1).padStart(2, "0"),
-        String(targetDate.getUTCDate()).padStart(2, "0"),
+        targetDate.getFullYear(),
+        String(targetDate.getMonth() + 1).padStart(2, "0"),
+        String(targetDate.getDate()).padStart(2, "0"),
       ].join("-");
     }
 

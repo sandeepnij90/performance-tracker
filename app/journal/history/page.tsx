@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { getAllJournalEntries } from "../../../lib/db";
 import { auth } from "@/auth";
-import JournalEntryCard from "../../../components/JournalEntryCard";
-import { formatEntryDate } from "@/lib/dates";
+import JournalHistoryView from "../../../components/JournalHistoryView";
 
 export default async function JournalHistoryPage() {
   const session = await auth();
@@ -32,19 +31,7 @@ export default async function JournalHistoryPage() {
         </Link>
       </div>
 
-      {entries.length === 0 ? (
-        <p className="text-foreground/60">No journal entries yet.</p>
-      ) : (
-        <div className="space-y-4">
-          {entries.map((entry) => (
-            <JournalEntryCard
-              key={entry.id}
-              entry={entry}
-              title={formatEntryDate(entry.date)}
-            />
-          ))}
-        </div>
-      )}
+      <JournalHistoryView entries={entries} />
     </main>
   );
 }
